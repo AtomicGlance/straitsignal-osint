@@ -58,32 +58,32 @@ const modelDefinitions = [
     id: "elastic",
     name: "Elastic net",
     family: "Regularized linear",
-    horizon: "$108.4",
-    mae: "3.8",
+    horizon: "candidate",
+    mae: "offline",
     strength: "Stable lag attribution",
   },
   {
     id: "boost",
     name: "Gradient boost",
     family: "Nonlinear ensemble",
-    horizon: "$115.7",
-    mae: "3.2",
+    horizon: "candidate",
+    mae: "offline",
     strength: "Interaction + threshold effects",
   },
   {
     id: "bayes",
     name: "Bayesian ridge",
     family: "Probabilistic",
-    horizon: "$110.9",
-    mae: "3.6",
+    horizon: "candidate",
+    mae: "offline",
     strength: "Posterior uncertainty",
   },
   {
     id: "market",
     name: "Market prior",
     family: "Probability blend",
-    horizon: "$112.8",
-    mae: "4.1",
+    horizon: "prior input",
+    mae: "not scored",
     strength: "Forward-looking crowd signal",
   },
 ] as const;
@@ -264,6 +264,8 @@ export default function Home() {
   }, []);
 
   const scenarioSpec = scenarios[scenario];
+  const conflictIndex =
+    scenario === "baseline" ? intel.conflict.index : scenarioSpec.conflictIndex;
   const selectedPoint =
     intel.tanker.chokepoints.find((point) => point.id === selectedChokepoint) ??
     intel.tanker.chokepoints[0];
@@ -312,10 +314,10 @@ export default function Home() {
     ),
   );
   const pollStressShift =
-    (oilPressureIndex - 50) * 0.028 + (scenarioSpec.conflictIndex - 50) * 0.018;
+    (oilPressureIndex - 50) * 0.028 + (conflictIndex - 50) * 0.018;
   const projectedPollMargin = Number((intel.polls.margin + pollStressShift).toFixed(1));
   const pollProjectionUncertainty = Number(
-    (3.4 + Math.abs(scenarioSpec.conflictIndex - 50) * 0.012).toFixed(1),
+    (3.4 + Math.abs(conflictIndex - 50) * 0.012).toFixed(1),
   );
 
   const toggleModel = (id: string) => {
@@ -358,7 +360,7 @@ export default function Home() {
 
         <div className="rail-footer">
           <span>READ-ONLY</span>
-          <strong>v1.0.0</strong>
+          <strong>v1.1.0</strong>
         </div>
       </aside>
 
@@ -434,7 +436,7 @@ export default function Home() {
               <article className="forecast-plot">
                 <div className="plot-meta">
                   <div>
-                    <span>WTI / USD PER BARREL</span>
+                    <span>{intel.forecast.instrument.toUpperCase()} / USD PER BARREL</span>
                     <strong>${intel.forecast.current.toFixed(1)}</strong>
                     <em className={valueClass(intel.forecast.changePct)}>
                       {changeText(intel.forecast.changePct)} modeled
@@ -442,7 +444,7 @@ export default function Home() {
                   </div>
                   <div className="chart-legend" aria-label="Chart legend">
                     <span className="legend-observed">Observed</span>
-                    <span className="legend-forecast">Ensemble</span>
+                    <span className="legend-forecast">Modeled path</span>
                     <span className="legend-band">80% interval</span>
                   </div>
                 </div>
@@ -501,12 +503,12 @@ export default function Home() {
                     <strong>{(intel.forecast.modelSpread + Math.abs(scenarioSpec.adjustment)).toFixed(1)}%</strong>
                   </div>
                   <div>
-                    <span>Models active</span>
+                    <span>Methods staged</span>
                     <strong>{activeModels.length} / 4</strong>
                   </div>
                   <div>
                     <span>Horizon</span>
-                    <strong>21D</strong>
+                    <strong>{intel.forecast.horizon.toUpperCase()}</strong>
                   </div>
                 </div>
                 <div className="scenario-field">
@@ -748,7 +750,7 @@ export default function Home() {
                       OIL PRESSURE <strong>{oilPressureIndex}</strong>
                     </span>
                     <span>
-                      CONFLICT <strong>{scenarioSpec.conflictIndex}</strong>
+                      CONFLICT <strong>{conflictIndex}</strong>
                     </span>
                   </div>
                   <p>
@@ -770,7 +772,11 @@ export default function Home() {
                     <strong>NOV 03</strong>
                   </div>
                 </div>
-                <p>{intel.polls.source}. Configure a polling feed for live refresh.</p>
+                <p>
+                  {intel.polls.source}
+                  {intel.polls.asOf ? ` · as of ${intel.polls.asOf}` : ""}. The modeled
+                  stress projection remains separate from the observed average.
+                </p>
               </article>
 
               <article className="market-panel">
@@ -838,8 +844,9 @@ export default function Home() {
                 <h2 id="models-heading">Model disagreement is a feature</h2>
               </div>
               <p>
-                Select the estimators that contribute to the displayed ensemble. At least
-                one model remains active so the forecast never collapses into an empty state.
+                Stage analytical approaches for the reproducible offline evaluation pipeline.
+                These controls document the model specification; they do not refit the live
+                public baseline inside the browser.
               </p>
             </div>
 
@@ -849,8 +856,8 @@ export default function Home() {
                   <span role="columnheader">Use</span>
                   <span role="columnheader">Approach</span>
                   <span role="columnheader">Family</span>
-                  <span role="columnheader">21D</span>
-                  <span role="columnheader">CV MAE</span>
+                  <span role="columnheader">Role</span>
+                  <span role="columnheader">CV status</span>
                   <span role="columnheader">Best at</span>
                 </div>
                 {modelDefinitions.map((model) => {
@@ -866,7 +873,7 @@ export default function Home() {
                           type="button"
                           className="model-toggle"
                           aria-pressed={active}
-                          aria-label={`${active ? "Remove" : "Add"} ${model.name} from ensemble`}
+                          aria-label={`${active ? "Remove" : "Add"} ${model.name} from the evaluation specification`}
                           onClick={() => toggleModel(model.id)}
                         >
                           <i aria-hidden="true" />
@@ -875,7 +882,7 @@ export default function Home() {
                       <strong role="cell">{model.name}</strong>
                       <span role="cell">{model.family}</span>
                       <em role="cell">{model.horizon}</em>
-                      <span role="cell">${model.mae}</span>
+                      <span role="cell">{model.mae}</span>
                       <span role="cell">{model.strength}</span>
                     </div>
                   );
@@ -885,7 +892,7 @@ export default function Home() {
               <aside className="attribution-panel">
                 <div className="panel-title-row">
                   <div>
-                    <span>SHAP / SIGNED CONTRIBUTION</span>
+                    <span>SIGNED BASELINE CONTRIBUTION</span>
                     <strong>Forecast drivers</strong>
                     <em>USD per barrel</em>
                   </div>
