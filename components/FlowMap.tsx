@@ -106,6 +106,17 @@ export function FlowMap({ tanker, selected, onSelect }: FlowMapProps) {
     );
 
     map.on("load", () => {
+      for (const layer of map.getStyle().layers) {
+        const textField = layer.type === "symbol" ? layer.layout?.["text-field"] : undefined;
+        if (textField && JSON.stringify(textField).includes("name")) {
+          map.setLayoutProperty(layer.id, "text-field", [
+            "coalesce",
+            ["get", "name:en"],
+            "",
+          ]);
+        }
+      }
+
       map.addSource("tankers", {
         type: "geojson",
         data: vesselDataRef.current,
