@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "source": "DESIGN.md",
+  "extensions": {
+    "colorMeta": {
+      "abyss": {
+        "displayName": "Abyss",
+        "role": "Page background",
+        "tonalRamp": ["#02060b", "#050d18", "#0a1b2c", "#15334b", "#31536a", "#6f879b", "#b8c7d3", "#eef5f9"]
+      },
+      "operations-navy": {
+        "displayName": "Operations Navy",
+        "role": "Primary panel surface",
+        "tonalRamp": ["#030910", "#081624", "#10283c", "#1c3d55", "#3a5c72", "#7690a2", "#bdcbd5", "#f1f6f8"]
+      },
+      "signal-teal": {
+        "displayName": "Signal Teal",
+        "role": "Live and favorable signal",
+        "tonalRamp": ["#062c2a", "#0a4944", "#11766d", "#20a99e", "#31d3c5", "#6be2d9", "#b4f1ec", "#e8fbf9"]
+      },
+      "analytical-blue": {
+        "displayName": "Analytical Blue",
+        "role": "Modeled and selected signal",
+        "tonalRamp": ["#071c34", "#0d3157", "#174e83", "#2f79b9", "#59a8ff", "#86c0ff", "#bedcff", "#edf7ff"]
+      },
+      "warning-amber": {
+        "displayName": "Warning Amber",
+        "role": "Degraded and uncertain signal",
+        "tonalRamp": ["#352306", "#5f3d09", "#8d5d12", "#c08524", "#f6b94a", "#f9ce7c", "#fbe3b3", "#fff7e8"]
+      },
+      "risk-coral": {
+        "displayName": "Risk Coral",
+        "role": "Downside risk and failure",
+        "tonalRamp": ["#3b0b10", "#65141b", "#98242d", "#ca4048", "#ff6d73", "#ff9ca0", "#ffc7c9", "#fff0f1"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Condensed briefing display",
+        "role": "Major analytical headings"
+      },
+      "body": {
+        "displayName": "Workhorse UI",
+        "role": "Narrative and controls"
+      },
+      "label": {
+        "displayName": "Measurement label",
+        "role": "Timestamps, IDs, units, and states"
+      }
+    },
+    "motion": [
+      {
+        "name": "Scenario response",
+        "value": "160ms ease",
+        "purpose": "State and control feedback without animating chart layout."
+      }
+    ],
+    "breakpoints": [
+      { "name": "tablet", "value": "1024px" },
+      { "name": "mobile", "value": "760px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Use for export or the single strongest local action.",
+      "html": "<button class=\"ds-btn-primary\">EXPORT BRIEF</button>",
+      "css": ".ds-btn-primary { min-height: 36px; padding: 0 13px; color: #050d18; background: #31d3c5; border: 1px solid #31d3c5; border-radius: 4px; font: 700 .64rem Cascadia Code, Consolas, monospace; letter-spacing: .06em; } .ds-btn-primary:hover { background: #56e2d6; } .ds-btn-primary:focus-visible { outline: 2px solid #59a8ff; outline-offset: 3px; }"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "button",
+      "refersTo": "button-segment",
+      "description": "Compact selection for time windows, scenarios, and model modes.",
+      "html": "<div class=\"ds-segment\"><button>12W</button><button class=\"is-selected\">32W+</button></div>",
+      "css": ".ds-segment { display: flex; padding: 3px; background: #081624; border: 1px solid #18364c; border-radius: 5px; } .ds-segment button { min-height: 30px; padding: 0 10px; color: #6f879b; background: transparent; border: 0; border-radius: 3px; font: 700 .63rem Cascadia Code, Consolas, monospace; } .ds-segment .is-selected { color: #e8f1f7; background: #11283b; box-shadow: inset 0 0 0 1px rgba(89,168,255,.4); } .ds-segment button:focus-visible { outline: 2px solid #59a8ff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Source State",
+      "kind": "chip",
+      "description": "Non-color-only source health marker for live, degraded, or demo data.",
+      "html": "<span class=\"ds-source-live\"><i></i>live</span>",
+      "css": ".ds-source-live { display: inline-flex; align-items: center; gap: 6px; color: #31d3c5; font: 700 .56rem Cascadia Code, Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; } .ds-source-live i { width: 6px; height: 6px; background: currentColor; border-radius: 50%; box-shadow: 0 0 0 3px rgba(49,211,197,.12); }"
+    },
+    {
+      "name": "Intelligence Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Structured evidence surface with restrained navy depth.",
+      "html": "<section class=\"ds-panel\"><small>PRIMARY ESTIMATE</small><h2>Oil futures signal fusion</h2><p>Observed and modeled evidence remain visually distinct.</p></section>",
+      "css": ".ds-panel { padding: 20px; color: #e8f1f7; background: #081624; border-top: 1px solid #18364c; border-radius: 8px; box-shadow: 0 20px 46px rgba(0,4,10,.34); font-family: Segoe UI, Arial, sans-serif; } .ds-panel small { color: #31d3c5; font: 700 .64rem Cascadia Code, Consolas, monospace; letter-spacing: .1em; } .ds-panel h2 { margin: 8px 0; font-family: Bahnschrift, Arial Narrow, sans-serif; } .ds-panel p { color: #9bb0c2; }"
+    },
+    {
+      "name": "Model Toggle",
+      "kind": "button",
+      "description": "Small accessible switch controlling ensemble membership.",
+      "html": "<button class=\"ds-model-toggle\" aria-pressed=\"true\"><i></i></button>",
+      "css": ".ds-model-toggle { width: 24px; height: 14px; position: relative; padding: 0; background: rgba(49,211,197,.2); border: 0; border-radius: 8px; } .ds-model-toggle i { position: absolute; left: 12px; top: 2px; width: 10px; height: 10px; background: #31d3c5; border-radius: 50%; transition: left 160ms ease, background 160ms ease; } .ds-model-toggle:focus-visible { outline: 2px solid #59a8ff; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Maritime Intelligence Plotting Room.",
+    "overview": "StraitSignal feels like a well-run research desk monitoring a fast-moving physical system: dense where comparison matters, quiet where judgment matters, and exact about the boundary between evidence and inference.",
+    "keyCharacteristics": [
+      "Deep navy operational surfaces with fixed signal semantics.",
+      "Asymmetric, information-led composition.",
+      "Large analytical plots with local provenance.",
+      "Purposeful motion limited to state feedback."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Semantics Rule",
+        "body": "A signal color never changes meaning between charts, source health, and alerts.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measurement Rule",
+        "body": "Monospace is earned by data or machine-readable content.",
+        "section": "typography"
+      },
+      {
+        "name": "The Evidence-First Rule",
+        "body": "The largest area belongs to the evidence currently driving the decision.",
+        "section": "layout"
+      }
+    ],
+    "dos": [
+      "Do label demo, stale, inferred, and live values explicitly.",
+      "Do show forecast intervals and model spread beside point estimates."
+    ],
+    "donts": [
+      "Don't present the forecast as financial advice or guaranteed truth.",
+      "Don't imply that polling causes oil prices."
+    ]
+  }
+}
